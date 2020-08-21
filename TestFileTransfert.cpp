@@ -10,6 +10,7 @@
 
 #include <string>
 #include <cstdint>
+#include <cstring>
 #include <arpa/inet.h>
 #include <sys/stat.h>
 #include <netinet/in.h>
@@ -17,6 +18,8 @@
 #include <sys/socket.h>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
+
 #include "ServeurTCP.h"
 
 
@@ -35,7 +38,9 @@ int main(void)
 
 		while(getline(monFichier, monTexte))
 		{
-			monServeurTCP->emettreData(&monTexte, sizeof(monTexte));
+			std::cout << monTexte << std::endl;
+			
+			monServeurTCP->emettreData((void*)monTexte.c_str(), monTexte.length());
 		}
 
         monServeurTCP->deconnecterUnClient();

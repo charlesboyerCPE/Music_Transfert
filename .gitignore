@@ -1,4 +1,11 @@
 TestServeurTcp.cpp
 ServeurTCP.h
 testServeur
+TestFileTransfert.cpp
+test.txt
+ClientTcp.cpp
+ClientTcp.h
+TestClientTcp.cpp
+TestFileTransfert.cpp
+test.txt
 
