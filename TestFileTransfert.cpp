@@ -17,7 +17,8 @@
 #include <sys/types.h>   
 #include <sys/socket.h>
 #include <iostream>
-#include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
 #include <algorithm>
 
 #include "ServeurTCP.h"
@@ -25,24 +26,53 @@
 
 int main(void)
 {
-    ServeurTCP *monServeurTCP = NULL;
-	std::string monTexte;
+	FILE *pointeurMusique;
+	long tailleMusique;
+	char *buffer;
+	size_t resultat;
 
+    ServeurTCP *monServeurTCP = NULL;
+	
     try
     {
-		std::ifstream monFichier("test.txt");
-        monServeurTCP = new ServeurTCP();
+		//On ouvre la musique
+		pointeurMusique = fopen("Musique/ADAMAS.mp3", "r");
+		if (pointeurMusique == NULL)
+		{
+			fputs("ERREUR FICHIER", stderr);
+			exit (1);
+		}
 
+		//On obtient la taille du fichier
+		fseek(pointeurMusique, 0, SEEK_END);
+		tailleMusique = ftell(pointeurMusique);
+		rewind (pointeurMusique);
+
+		//On alloue la mémoire nécessaire pour contenir la musique
+		buffer = (char*) malloc (sizeof(char*)*tailleMusique);
+		if (buffer == NULL)
+		{
+			fputs("ERREUR MEMOIRE", stderr);
+			exit (2);
+		}
+
+		//On copie la musique dans la mémoire
+		resultat = fread(buffer, 1, tailleMusique, pointeurMusique);
+		if (resultat != tailleMusique)
+		{
+			fputs("ERREUR LECTURE", stderr);
+			exit (3);
+		}
+
+		//On ouvre le serveur TCP
+        monServeurTCP = new ServeurTCP();
         monServeurTCP->ouvrir("127.0.0.1", 55555);
         monServeurTCP->connecterUnClient();
 
-		while(getline(monFichier, monTexte))
-		{
-			std::cout << monTexte << std::endl;
-			
-			monServeurTCP->emettreData((void*)monTexte.c_str(), monTexte.length());
-		}
+		//On envoi le contenu de buffer
+		monServeurTCP->emettreData(buffer, sizeof(buffer));
 
+		//On ferme le serveur 
         monServeurTCP->deconnecterUnClient();
         monServeurTCP->fermer();
     }
@@ -85,6 +115,9 @@ int main(void)
 		}
 	}
 
+	//On ferme le fichier et on libère la mémoire
+	fclose(pointeurMusique);
+	free(buffer);
     delete monServeurTCP;
 
     return 0;
