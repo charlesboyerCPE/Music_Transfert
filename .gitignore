@@ -3,11 +3,10 @@ ServeurTCP.h
 testServeur
 TestFileTransfert.cpp
 test.txt
-ClientTcp.cpp
-ClientTcp.h
-TestClientTcp.cpp
 TestFileTransfert.cpp
 test.txt
-
 testEnvoiMusique
 Musique/ADAMAS.mp3
+Client
+Serveur
+testClient.txt
