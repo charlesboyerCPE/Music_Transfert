@@ -14,3 +14,6 @@ Source/TestFichierReception.cpp
 Source/TestFichier
 testReceptionFichier.txt
 Source/TestClientTCP
+TestClientTCP
+Source/TestFichierEnvoi.cpp
+testEnvoiFichier.txt

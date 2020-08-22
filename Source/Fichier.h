@@ -16,8 +16,9 @@ class Fichier
 {
     private:
         FILE * pointeurFichier;
-	    char *buffer;
+	    char * buffer;
         long tailleFichier;
+        std::string cheminFichier;
 
     public:
 
@@ -34,7 +35,7 @@ class Fichier
             CopieFichier,
         };
 
-        Fichier(std::string cheminFichier, int mode);
+        Fichier(std::string cheminFichier, char mode);
 
         ~Fichier();
 
@@ -47,6 +48,10 @@ class Fichier
         void copierDansFichier();
 
         char* get_buffer();
+
+        std::string get_cheminFichier();
+
+        long get_tailleFichier();
 };
 
  #endif
