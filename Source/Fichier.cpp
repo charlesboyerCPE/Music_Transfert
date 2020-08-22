@@ -10,43 +10,68 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <string.h>
 
 #include "Fichier.h"
 
 Fichier::Fichier()
 {
-    *pointeurFichier = NULL;
-    long tailleFichier = NULL;
-	char *buffer = {NULL};
-	size_t resultat = NULL;
+	this->buffer = {NULL};
+	this->pointeurFichier = NULL;
+	tailleFichier = 0;
 }
 
 Fichier::~Fichier()
 {
-    fclose(pointeurFichier);
+	fclose(pointeurFichier);
 }
 
-void ouvrirLecture(std::string cheminFichier)
+void Fichier::ouvrirLecture(std::string cheminFichier)
 {
     if (pointeurFichier != NULL) throw ErreurFichier::FichierDejaOuvert;
 
-	pointeurFichier = fopen(cheminFichier, "r");
-	if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichier;
+	pointeurFichier = fopen(cheminFichier.c_str(), "r");
+	if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierLecture;
 }
 
-void ouvrirEcriture(std::string cheminFichier)
+void Fichier::ouvrirEcriture(std::string cheminFichier)
 {
     if (pointeurFichier != NULL) throw ErreurFichier::FichierDejaOuvert;
     
-	pointeurFichier = fopen(cheminFichier, "ww");
-	if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichier;
+	pointeurFichier = fopen(cheminFichier.c_str(), "w");
+	if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
 }
 
-void obtenirTailleFichier()
+void Fichier::obtenirTailleFichier()
 {
 	fseek(pointeurFichier, 0, SEEK_END);
 	tailleFichier = ftell(pointeurFichier);
 	rewind (pointeurFichier);
+}
 
-	if(tailleFichier == NULL) throw ErreurFichier::TailleFichierIncorrect;
+void Fichier::initialiserBuffer()
+{
+	buffer = (char*) malloc (sizeof(char*));
+	if (buffer == NULL) throw ErreurFichier::AllocationMemoire;
+}
+
+void Fichier::copierDansMemoire()
+{
+	size_t resultat;
+
+	resultat = fread(buffer, 1, tailleFichier, pointeurFichier);
+	if (resultat != tailleFichier) throw ErreurFichier::CopieMemoire;
+}
+
+void Fichier::copierDansFichier()
+{
+	size_t resultat;
+
+	resultat = fwrite(buffer, sizeof(char), sizeof(buffer), pointeurFichier);
+	if (resultat != sizeof(buffer)) throw ErreurFichier::CopieFichier;
+}
+
+char* Fichier::get_buffer()
+{
+	return buffer;
 }

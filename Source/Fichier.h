@@ -9,13 +9,15 @@
  #ifndef FICHIER_H
  #define FICHIER_H
 
+#include <stdio.h>
+#include <string>
+
 class Fichier
 {
     private:
-        FILE *pointeurFichier;
-	    long tailleMusique;
+        FILE * pointeurFichier;
 	    char *buffer;
-	    size_t resultat;
+        long tailleFichier;
 
     public:
 
@@ -24,10 +26,13 @@ class Fichier
         */
         enum class ErreurFichier
         {
-            OuvertureFichier,
+            OuvertureFichierLecture,
+            OuvertureFichierEcriture,
             FichierDejaOuvert,
             TailleFichierIncorrect,
-            
+            AllocationMemoire,
+            CopieMemoire,
+            CopieFichier,
         };
 
         Fichier();
@@ -36,7 +41,17 @@ class Fichier
 
         void ouvrirLecture(std::string cheminFichier);
 
-        void ouvrirEcriture(std::string cheminFichier)
+        void ouvrirEcriture(std::string cheminFichier);
+
+        void obtenirTailleFichier();
+
+        void initialiserBuffer();
+
+        void copierDansMemoire(); 
+
+        void copierDansFichier();
+
+        char* get_buffer();
 };
 
  #endif
