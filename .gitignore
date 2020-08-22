@@ -12,3 +12,5 @@ testClient.txt
 Source/testReceptionFichier.txt
 Source/TestFichierReception.cpp
 Source/TestFichier
+testReceptionFichier.txt
+Source/TestClientTCP

@@ -14,32 +14,28 @@
 
 #include "Fichier.h"
 
-Fichier::Fichier()
+Fichier::Fichier(std::string cheminFichier, int mode)
 {
 	this->buffer = {NULL};
 	this->pointeurFichier = NULL;
-	tailleFichier = 0;
+
+	switch (mode)
+	{
+		case 1:
+			pointeurFichier = fopen(cheminFichier.c_str(), "r");
+			if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierLecture;
+			break;
+		
+		case 2:
+			pointeurFichier = fopen(cheminFichier.c_str(), "w");
+			if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
+			break;
+	}
 }
 
 Fichier::~Fichier()
 {
 	fclose(pointeurFichier);
-}
-
-void Fichier::ouvrirLecture(std::string cheminFichier)
-{
-    if (pointeurFichier != NULL) throw ErreurFichier::FichierDejaOuvert;
-
-	pointeurFichier = fopen(cheminFichier.c_str(), "r");
-	if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierLecture;
-}
-
-void Fichier::ouvrirEcriture(std::string cheminFichier)
-{
-    if (pointeurFichier != NULL) throw ErreurFichier::FichierDejaOuvert;
-    
-	pointeurFichier = fopen(cheminFichier.c_str(), "w");
-	if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
 }
 
 void Fichier::obtenirTailleFichier()
@@ -67,8 +63,8 @@ void Fichier::copierDansFichier()
 {
 	size_t resultat;
 
-	resultat = fwrite(buffer, sizeof(char), sizeof(buffer), pointeurFichier);
-	if (resultat != sizeof(buffer)) throw ErreurFichier::CopieFichier;
+	resultat = fwrite(buffer, sizeof(char), strlen(buffer), pointeurFichier);
+	if (resultat != strlen(buffer)) throw ErreurFichier::CopieFichier;
 }
 
 char* Fichier::get_buffer()

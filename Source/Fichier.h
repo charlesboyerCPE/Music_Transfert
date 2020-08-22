@@ -28,20 +28,15 @@ class Fichier
         {
             OuvertureFichierLecture,
             OuvertureFichierEcriture,
-            FichierDejaOuvert,
             TailleFichierIncorrect,
             AllocationMemoire,
             CopieMemoire,
             CopieFichier,
         };
 
-        Fichier();
+        Fichier(std::string cheminFichier, int mode);
 
         ~Fichier();
-
-        void ouvrirLecture(std::string cheminFichier);
-
-        void ouvrirEcriture(std::string cheminFichier);
 
         void obtenirTailleFichier();
 
