@@ -47,7 +47,7 @@ void Fichier::obtenirTailleFichier()
 
 void Fichier::initialiserBuffer()
 {
-	buffer = (char*) malloc (tailleFichier+1);
+	buffer = (char*) malloc (sizeof(char));
 	if (buffer == NULL) throw ErreurFichier::AllocationMemoire;
 }
 
@@ -55,7 +55,7 @@ void Fichier::copierDansMemoire()
 {
 	size_t resultat;
 
-	resultat = fread(buffer, sizeof(char), tailleFichier, pointeurFichier);
+	resultat = fread(buffer, 1, tailleFichier, pointeurFichier);
 	if (resultat != tailleFichier) throw ErreurFichier::CopieMemoire;
 }
 
@@ -63,8 +63,8 @@ void Fichier::copierDansFichier()
 {
 	size_t resultat;
 
-	resultat = fwrite(buffer, sizeof(char), sizeof(buffer), pointeurFichier);
-	if (resultat != sizeof(buffer)) throw ErreurFichier::CopieFichier;
+	resultat = fwrite(buffer, sizeof(char), strlen(buffer), pointeurFichier);
+	if (resultat != strlen(buffer)) throw ErreurFichier::CopieFichier;
 }
 
 char* Fichier::get_buffer()
