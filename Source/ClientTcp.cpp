@@ -99,7 +99,7 @@ void ClientTcp::emettreData(void* data, uint32_t nbOctets)
  * \fn void ClientTcp::recevoirData(void* data, uint32_t nbOctets) 
  * \brief Receptionne depuis le serveur "nbOctets" octets et stocke ces octets dans le tableau "data".
  * \param [in] data le tableau servant � stocker les donn�es re�us.
- * \param [in] nbOctets le nombre d'octets � stocker dans le tableau data..
+ * \param [in] nbOctets le nombre d'octets � stocker dans le tableau data.
  */
 void ClientTcp::recevoirData(void* data, uint32_t nbOctets) 
 {
