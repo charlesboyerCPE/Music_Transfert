@@ -23,19 +23,18 @@ int main(void)
 
     try
     {
-        monFichier = new Fichier("../testEnvoiFichier.txt", 'r');
+        monFichier = new Fichier((char*)"../testEnvoiFichier.txt", "r");
         monServeurTCP = new ServeurTCP();
 
 		//On détermine la taille du fichier et on initialise le buffer
-        monFichier->determinerTailleFichier();
-        monFichier->initialiserBuffer();
+        monFichier->initialisation();
 
 		//On lit le fichier et on met son contenu en mémoire
         monFichier->lire();
 
 		//On initialise le header pour le futur fichier
-		memcpy(headerFichier.nomFichier, "testEnvoiFichier.txt", strlen("testEnvoiFichier.txt"));
-		headerFichier.tailleNomFichier = strlen(headerFichier.nomFichier);
+		strcpy(headerFichier.nomFichier, "testReceptionFichier.txt");
+		headerFichier.tailleNomFichier = (long)strlen(headerFichier.nomFichier);
 		headerFichier.tailleFichier = monFichier->get_tailleFichier();
 
         monServeurTCP->ouvrir("127.0.0.1", 55555);
@@ -48,7 +47,7 @@ int main(void)
 			monServeurTCP->emettreData(&headerFichier, sizeof(headerFichier));
             
 			//On envoi ensuite le contenu du fichier
-			monServeurTCP->emettreData(monFichier->get_buffer(), strlen(monFichier->get_buffer()));
+			monServeurTCP->emettreData(monFichier->get_contenuFichier(), strlen(monFichier->get_contenuFichier()));
 
             monServeurTCP->deconnecterUnClient();
         }

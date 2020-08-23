@@ -15,10 +15,10 @@
 class Fichier
 {
     private:
-        FILE * pointeurFichier;
-	    char * buffer;
+        FILE *pointeurFichier;
+	    char *contenuFichier;
         long tailleFichier;
-        std::string cheminFichier;
+        
 
     public:
 
@@ -35,25 +35,21 @@ class Fichier
             CopieFichier,
         };
 
-        Fichier(std::string cheminFichier, char mode);
+        Fichier(char* cheminFichier, std::string mode);
 
         ~Fichier();
 
-        void determinerTailleFichier();
+        void initialisation();
 
-        void initialiserBuffer();
+        void initialisation(long tailleFichier);
 
         void lire(); 
 
         void sauvegarder();
 
-        char* get_buffer();
-
-        std::string get_cheminFichier();
+        char* get_contenuFichier();
 
         long get_tailleFichier();
-
-        void set_tailleFichier(long tailleFichier);
 };
 
  #endif

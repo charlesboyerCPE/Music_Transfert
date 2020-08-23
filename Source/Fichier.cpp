@@ -14,49 +14,64 @@
 
 #include "Fichier.h"
 
-Fichier::Fichier(std::string cheminFichier, char mode)
+Fichier::Fichier(char * cheminFichier, std::string mode)
 {
-	buffer = {NULL};
-	this->pointeurFichier = NULL;
-	this->cheminFichier = cheminFichier;
+	pointeurFichier = NULL;
+	contenuFichier = {NULL};
 	tailleFichier = 0;
 
-	if (mode == 'r')
+	if (mode == "r")
 	{
-		pointeurFichier = fopen(cheminFichier.c_str(), "r");
+		pointeurFichier = fopen(cheminFichier, "r");
 		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierLecture;
 	} 
-	else if (mode == 'w')
+	else if (mode == "w")
 	{
-		pointeurFichier = fopen(cheminFichier.c_str(), "w");
+		pointeurFichier = fopen(cheminFichier, "w");
 		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
 	}
+	else if (mode == "rb")
+	{
+		pointeurFichier = fopen(cheminFichier, "rb");
+		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
+	}
+	else if (mode == "wb")
+	{
+		pointeurFichier = fopen(cheminFichier, "rb");
+		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
+	}
+
 }
 
 Fichier::~Fichier()
 {
 	fclose(pointeurFichier);
-	free(buffer);
+	free(contenuFichier);
 }
 
-void Fichier::determinerTailleFichier()
+void Fichier::initialisation()
 {
 	fseek(pointeurFichier, 0, SEEK_END);
 	tailleFichier = ftell(pointeurFichier);
 	rewind (pointeurFichier);
+
+	contenuFichier = (char*) malloc (sizeof(char) * tailleFichier);
+	if (contenuFichier == NULL) throw ErreurFichier::AllocationMemoire;
 }
 
-void Fichier::initialiserBuffer()
+void Fichier::initialisation(long tailleFichier)
 {
-	buffer = (char*) malloc (sizeof(char) * tailleFichier);
-	if (buffer == NULL) throw ErreurFichier::AllocationMemoire;
+	this->tailleFichier = tailleFichier;
+
+	contenuFichier = (char*) malloc (sizeof(char) * this->tailleFichier);
+	if (contenuFichier == NULL) throw ErreurFichier::AllocationMemoire;
 }
 
 void Fichier::lire()
 {
 	size_t resultat;
 
-	resultat = fread(buffer, 1, tailleFichier, pointeurFichier);
+	resultat = fread(contenuFichier, 1, tailleFichier, pointeurFichier);
 	if (resultat != tailleFichier) throw ErreurFichier::CopieMemoire;
 }
 
@@ -64,27 +79,17 @@ void Fichier::sauvegarder()
 {
 	size_t resultat;
 
-	resultat = fwrite(buffer, sizeof(char), strlen(buffer), pointeurFichier);
-	if (resultat != strlen(buffer)) throw ErreurFichier::CopieFichier;
+	contenuFichier[tailleFichier] = '\0';
+	resultat = fwrite(contenuFichier, sizeof(char), strlen(contenuFichier), pointeurFichier);
+	if (resultat != strlen(contenuFichier)) throw ErreurFichier::CopieFichier;
 }
 
-char* Fichier::get_buffer()
+char* Fichier::get_contenuFichier()
 {
-	return buffer;
-}
-
-std::string Fichier::get_cheminFichier()
-{
-	return cheminFichier;
+	return contenuFichier;
 }
 
 long Fichier::get_tailleFichier()
 {
 	return tailleFichier;
-}
-
-void Fichier::set_tailleFichier(long tailleFichier)
-{
-	this->tailleFichier = tailleFichier;
-	std::cout << "Fichier::set_tailleFichier() - Nouvelle taille de fichier: " << this->tailleFichier << std::endl;
 }

@@ -30,19 +30,17 @@ int main(void)
 		monClient->recevoirData(&headerRecu, sizeof(headerRecu));
 
 		//On créer le fichier avec les informations du header
-		monFichier = new Fichier(headerRecu.nomFichier, 'w');
+		monFichier = new Fichier(headerRecu.nomFichier, "w");
 
-		//On initialise le buffer
-		monFichier->initialiserBuffer();
+		//On saisi la taille du fichier et n initialise le buffer
+		monFichier->initialisation(headerRecu.tailleFichier);
 
 		//On stocke les données envoyées dans le buffer
-		monClient->recevoirData(monFichier->get_buffer(), headerRecu.tailleFichier);
+		monClient->recevoirData(monFichier->get_contenuFichier(), headerRecu.tailleFichier);
 
 		monClient->clore();
 
-		//On sauvegarde le contenu du buffer dans le fichier
         monFichier->sauvegarder();
-        std::cout << "Contenu Recu: " << monFichier->get_buffer() << std::endl;
     }
 
     catch(ClientTcp::ErreurClientTcp x)
