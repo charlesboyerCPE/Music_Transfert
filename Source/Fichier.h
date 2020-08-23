@@ -43,9 +43,9 @@ class Fichier
 
         void initialiserBuffer();
 
-        void copierDansMemoire(); 
+        void lire(); 
 
-        void copierDansFichier();
+        void sauvegarder();
 
         char* get_buffer();
 

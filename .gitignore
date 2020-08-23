@@ -17,3 +17,12 @@ Source/TestClientTCP
 TestClientTCP
 Source/TestFichierEnvoi.cpp
 testEnvoiFichier.txt
+/Source/Tests/
+Source/Tests/TestFichierEnvoi
+Source/Tests/TestFichierEnvoi.cpp
+Source/Tests/TestFichierReception
+Source/Tests/TestFichierReception.cpp
+Source/Tests/TestFichierEnvoi
+Source/Tests/TestFichierEnvoi.cpp
+Source/Tests/TestFichierReception
+Source/Tests/TestFichierReception.cpp

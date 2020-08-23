@@ -52,7 +52,7 @@ void Fichier::initialiserBuffer()
 	if (buffer == NULL) throw ErreurFichier::AllocationMemoire;
 }
 
-void Fichier::copierDansMemoire()
+void Fichier::lire()
 {
 	size_t resultat;
 
@@ -60,7 +60,7 @@ void Fichier::copierDansMemoire()
 	if (resultat != tailleFichier) throw ErreurFichier::CopieMemoire;
 }
 
-void Fichier::copierDansFichier()
+void Fichier::sauvegarder()
 {
 	size_t resultat;
 

@@ -12,28 +12,36 @@
 #include <iostream>
 #include "../Fichier.h"
 #include "../ClientTcp.h"
+#include "../Header.h"
 
 int main(void)
 {
     ClientTcp *monClient = NULL;
     Fichier *monFichier = NULL;
-
-	std::string tailleRecu;
-	long tailleFichier;
+	Header headerRecu;
 
     try
     {
-         monFichier = new Fichier("../testReceptionFichier.txt", 'w');
         monClient = new ClientTcp();
-
-        monFichier->initialiserBuffer();
 
         monClient->connecter("127.0.0.1", 55555);
 		
-		monClient->recevoirData(monFichier->get_buffer(), 8);
+		//On recoit le header que le serveur a envoyer
+		monClient->recevoirData(&headerRecu, sizeof(headerRecu));
+
+		//On créer le fichier avec les informations du header
+		monFichier = new Fichier(headerRecu.nomFichier, 'w');
+
+		//On initialise le buffer
+		monFichier->initialiserBuffer();
+
+		//On stocke les données envoyées dans le buffer
+		monClient->recevoirData(monFichier->get_buffer(), headerRecu.tailleFichier);
+
 		monClient->clore();
 
-        monFichier->copierDansFichier();
+		//On sauvegarde le contenu du buffer dans le fichier
+        monFichier->sauvegarder();
         std::cout << "Contenu Recu: " << monFichier->get_buffer() << std::endl;
     }
 
