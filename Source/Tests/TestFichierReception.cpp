@@ -10,24 +10,27 @@
  */
 
 #include <iostream>
-#include "Fichier.h"
-#include "ClientTcp.h"
+#include "../Fichier.h"
+#include "../ClientTcp.h"
 
 int main(void)
 {
     ClientTcp *monClient = NULL;
     Fichier *monFichier = NULL;
 
+	std::string tailleRecu;
+	long tailleFichier;
+
     try
     {
-        monFichier = new Fichier("../testReceptionFichier.txt", 'w');
+         monFichier = new Fichier("../testReceptionFichier.txt", 'w');
         monClient = new ClientTcp();
 
         monFichier->initialiserBuffer();
 
         monClient->connecter("127.0.0.1", 55555);
 		
-		monClient->recevoirData(monFichier->get_buffer(), sizeof(monFichier->get_buffer()));
+		monClient->recevoirData(monFichier->get_buffer(), 8);
 		monClient->clore();
 
         monFichier->copierDansFichier();

@@ -39,7 +39,7 @@ class Fichier
 
         ~Fichier();
 
-        void obtenirTailleFichier();
+        void determinerTailleFichier();
 
         void initialiserBuffer();
 
@@ -52,6 +52,8 @@ class Fichier
         std::string get_cheminFichier();
 
         long get_tailleFichier();
+
+        void set_tailleFichier(long tailleFichier);
 };
 
  #endif

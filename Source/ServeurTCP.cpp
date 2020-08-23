@@ -17,6 +17,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <cstdint>
+#include <iostream>
 #include "ServeurTCP.h"
 
 /*!
@@ -89,32 +90,43 @@ void ServeurTCP::fermer()
  * \param [in] data le tableau où sont stockés les données.
  * \param [in] tailleData la taille des données reçu.
  */
-void ServeurTCP::recevoirData(void* data, uint32_t tailleData) 
+ssize_t ServeurTCP::recevoirData(void* data, uint32_t tailleData) 
 {
-	int ctrl;
+	int nbEnvoi;
 
-	ctrl = recv(socketDialogueClient, data, tailleData, MSG_WAITALL);
-	if (ctrl != tailleData) throw ErreurServeurTCP::EchecReception;	
+	nbEnvoi = recv(socketDialogueClient, data, tailleData, MSG_WAITALL);
+	if (nbEnvoi != tailleData) throw ErreurServeurTCP::EchecReception;	
+	else
+	{
+		std::cout << "ServeurTCP::recevoirData - Nb Octet recu: " << nbEnvoi << std::endl;
+		std::cout << "ServeurTCP::recevoirData - Contenu recu: " << (char*) data << std::endl;
+		return nbEnvoi;
+	}
 }
 
 /*!
  * \fn ServeurTCP::emettreData(void* data, uint32_t nbOctets) 
- * \brief Emet au client connecté les "nbOctets" premiers octets du tableau "data".
+ * \brief Emet au client connecté les "nbOctets" octets du tableau "data".
  * \param [in] data le tableau où sont stockés les données.
  * \param [in] nbOctets les octets du tableau data.
  */
-void ServeurTCP::emettreData(void* data, uint32_t nbOctets) 
+ssize_t ServeurTCP::emettreData(void* data, uint32_t nbOctets) 
 {
-	int ctrl;
+	int nbEmit;
 
-	ctrl = send(socketDialogueClient, data, nbOctets, 0);
-	if (ctrl != nbOctets) throw ErreurServeurTCP::EchecEnvoi;
-
+	nbEmit = send(socketDialogueClient, data, nbOctets, 0);
+	if (nbEmit != nbOctets) throw ErreurServeurTCP::EchecEnvoi;
+	else
+	{
+		std::cout << "ServeurTCP::emettreData - Nb Octet Envoye: " << nbEmit << std::endl;
+		std::cout << "ServeurTCP::emettreData - Contenu envoye: " << (char*) data << std::endl;
+		return nbEmit;
+	}
 }
 
 /*!
  * \fn ServeurTCP::connecterUnClient() 
- * \brief Accepte un client. M�thode bloquante.
+ * \brief Accepte un client. Méthode bloquante.
  */
 void ServeurTCP::connecterUnClient() 
 {

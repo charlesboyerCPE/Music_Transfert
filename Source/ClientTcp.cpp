@@ -16,6 +16,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <cstdint>
+#include <iostream>
 #include "ClientTcp.h"
 
 
@@ -84,14 +85,20 @@ void ClientTcp::clore()
  * \param [in] data le tableau o� sont stocker les donn�es re�us.
  * \param [in] nbOctets le nombre d'octets stocker dans le tableau data.
  */
-void ClientTcp::emettreData(void* data, uint32_t nbOctets) 
+ssize_t ClientTcp::emettreData(void* data, uint32_t nbOctets) 
 {
-	int ctrl;
+	int nbEmit;
 
 	if(socketDialogue == -1) throw ErreurClientTcp::NonOuvert;
 	
-	ctrl = send(socketDialogue, data, nbOctets, 0);
-	if (ctrl != nbOctets) throw ErreurClientTcp::ErreurEnvoi; 
+	nbEmit = send(socketDialogue, data, nbOctets, 0);
+	if (nbEmit != nbOctets) throw ErreurClientTcp::ErreurEnvoi; 
+	else
+	{
+		std::cout << "ClientTcp::emettreData() - Nombre Emit: " << nbEmit << std::endl;
+		std::cout << "ClientTcp::emettreData() - Contenu Envoyer: " << (char*)data << std::endl;
+		return nbEmit;
+	}
 	
 }
 
@@ -101,13 +108,20 @@ void ClientTcp::emettreData(void* data, uint32_t nbOctets)
  * \param [in] data le tableau servant � stocker les donn�es re�us.
  * \param [in] nbOctets le nombre d'octets � stocker dans le tableau data.
  */
-void ClientTcp::recevoirData(void* data, uint32_t nbOctets) 
+ssize_t ClientTcp::recevoirData(void* data, uint32_t nbOctets) 
 {
-	int ctrl;
+	int nbRecu;
 	
 	if(socketDialogue == -1) throw ErreurClientTcp::NonOuvert;
 	
-	ctrl = recv (socketDialogue, data, nbOctets , MSG_WAITALL); 
-	//if(ctrl != nbOctets) throw ErreurClientTcp::ErreurReception;
+	nbRecu = recv (socketDialogue, data, nbOctets , MSG_WAITALL); 
+	if(nbRecu != nbOctets) throw ErreurClientTcp::ErreurReception;
+	else
+	{
+		std::cout << "ClientTcp::recevoirData() - Nombre Recu: " << nbRecu << std::endl;
+		std::cout << "ClientTcp::recevoirData() - Contenu Recu: " << (char*)data << std::endl;
+		return nbRecu;
+	}
+	
 }
 

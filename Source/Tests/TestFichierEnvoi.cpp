@@ -10,20 +10,24 @@
  */
 
 #include <iostream>
-#include "Fichier.h"
-#include "ServeurTCP.h"
+#include <cstring>
+#include "../Fichier.h"
+#include "../ServeurTCP.h"
 
 int main(void)
 {
     ServeurTCP *monServeurTCP = NULL;
     Fichier *monFichier = NULL;
 
+	char * tailleFichier;
+
     try
     {
+        
         monFichier = new Fichier("../testEnvoiFichier.txt", 'r');
         monServeurTCP = new ServeurTCP();
 
-        monFichier->obtenirTailleFichier();
+        monFichier->determinerTailleFichier();
         monFichier->initialiserBuffer();
         monFichier->copierDansMemoire();
 
@@ -34,7 +38,6 @@ int main(void)
             monServeurTCP->connecterUnClient();
 
             monServeurTCP->emettreData(monFichier->get_buffer(), sizeof(monFichier->get_buffer()));
-            std::cout << "Contenu Envoyer : "<< monFichier->get_buffer() << std::endl;
 
             monServeurTCP->deconnecterUnClient();
         }

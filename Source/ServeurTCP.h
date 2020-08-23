@@ -55,10 +55,10 @@ class ServeurTCP
 		void ouvrir(std::string adresse, uint16_t port, int32_t nbPlaces = 10);
 
 		/*!\brief Recoit des données du client connecté. Receptionne "tailleData" octets. Les octets recus sont stockés dans le tableau "data". */
-		void recevoirData(void* data, uint32_t tailleData);
+		ssize_t recevoirData(void* data, uint32_t tailleData);
 
 		/*!\brief Emet au client connecté les "nbOctets" premiers octets du tableau "data". */
-		void emettreData(void* data, uint32_t nbOctets);
+		ssize_t emettreData(void* data, uint32_t nbOctets);
 
 		/*!\brief Accepte un client. Méthode bloquante. */
 		void connecterUnClient();

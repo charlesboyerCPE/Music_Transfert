@@ -58,10 +58,10 @@ class ClientTcp
     void clore();
 
 	/*!\brief Emmet au serveur connect� les "nbOctets" premier octets du tableau "data".*/
-    void emettreData(void* data, uint32_t nbOctets);
+    ssize_t emettreData(void* data, uint32_t nbOctets);
 
 	/*!\brief Receptionne depuis le serveur "nbOctets" octets et stocke ces octets dans le tableau "data".*/
-    void recevoirData(void* data, uint32_t nbOctets);
+    ssize_t recevoirData(void* data, uint32_t nbOctets);
 
 };
 #endif

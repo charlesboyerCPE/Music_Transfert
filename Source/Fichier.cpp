@@ -19,6 +19,7 @@ Fichier::Fichier(std::string cheminFichier, char mode)
 	buffer = {NULL};
 	this->pointeurFichier = NULL;
 	this->cheminFichier = cheminFichier;
+	tailleFichier = 0;
 
 	if (mode == 'r')
 	{
@@ -38,7 +39,7 @@ Fichier::~Fichier()
 	free(buffer);
 }
 
-void Fichier::obtenirTailleFichier()
+void Fichier::determinerTailleFichier()
 {
 	fseek(pointeurFichier, 0, SEEK_END);
 	tailleFichier = ftell(pointeurFichier);
@@ -47,7 +48,7 @@ void Fichier::obtenirTailleFichier()
 
 void Fichier::initialiserBuffer()
 {
-	buffer = (char*) malloc (sizeof(char));
+	buffer = (char*) malloc (sizeof(char) * tailleFichier);
 	if (buffer == NULL) throw ErreurFichier::AllocationMemoire;
 }
 
@@ -80,4 +81,10 @@ std::string Fichier::get_cheminFichier()
 long Fichier::get_tailleFichier()
 {
 	return tailleFichier;
+}
+
+void Fichier::set_tailleFichier(long tailleFichier)
+{
+	this->tailleFichier = tailleFichier;
+	std::cout << "Fichier::set_tailleFichier() - Nouvelle taille de fichier: " << this->tailleFichier << std::endl;
 }
