@@ -37,7 +37,7 @@ int main(void)
         {
             monServeurTCP->connecterUnClient();
 
-            monServeurTCP->emettreData(monFichier->get_buffer(), sizeof(monFichier->get_buffer()));
+            monServeurTCP->emettreData(monFichier->get_buffer(), strlen(monFichier->get_buffer()));
 
             monServeurTCP->deconnecterUnClient();
         }
