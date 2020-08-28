@@ -33,11 +33,16 @@ Fichier::Fichier(char * cheminFichier, std::string mode)
 	else if (mode == "rb")
 	{
 		pointeurFichier = fopen(cheminFichier, "rb");
-		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
+		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierLecture;
 	}
 	else if (mode == "wb")
 	{
-		pointeurFichier = fopen(cheminFichier, "rb");
+		pointeurFichier = fopen(cheminFichier, "wb");
+		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
+	}
+	else if (mode == "ab")
+	{
+		pointeurFichier = fopen(cheminFichier, "ab");
 		if (pointeurFichier == NULL) throw ErreurFichier::OuvertureFichierEcriture;
 	}
 
@@ -62,8 +67,9 @@ void Fichier::initialisation()
 void Fichier::initialisation(long tailleFichier)
 {
 	this->tailleFichier = tailleFichier;
+	fseek(pointeurFichier, 0, SEEK_END);
 
-	contenuFichier = (char*) malloc (sizeof(char) * this->tailleFichier);
+	contenuFichier = (char*) malloc (sizeof(char) * tailleFichier);
 	if (contenuFichier == NULL) throw ErreurFichier::AllocationMemoire;
 }
 
@@ -80,6 +86,14 @@ void Fichier::sauvegarder()
 	size_t resultat;
 
 	contenuFichier[tailleFichier] = '\0';
+	resultat = fwrite(contenuFichier, sizeof(char), strlen(contenuFichier), pointeurFichier);
+	if (resultat != strlen(contenuFichier)) throw ErreurFichier::CopieFichier;
+}
+
+void Fichier::sauvegarderFichierBinaire()
+{
+	size_t resultat;
+
 	resultat = fwrite(contenuFichier, sizeof(char), strlen(contenuFichier), pointeurFichier);
 	if (resultat != strlen(contenuFichier)) throw ErreurFichier::CopieFichier;
 }

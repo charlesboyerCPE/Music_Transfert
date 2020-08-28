@@ -47,6 +47,8 @@ class Fichier
 
         void sauvegarder();
 
+        void sauvegarderFichierBinaire();
+
         char* get_contenuFichier();
 
         long get_tailleFichier();

@@ -26,3 +26,4 @@ Source/Tests/TestFichierEnvoi
 Source/Tests/TestFichierEnvoi.cpp
 Source/Tests/TestFichierReception
 Source/Tests/TestFichierReception.cpp
+.vscode/
