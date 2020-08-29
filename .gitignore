@@ -6,8 +6,6 @@ TestFileTransfert.cpp
 test.txt
 testEnvoiMusique
 Musique/ADAMAS.mp3
-Client
-Serveur
 testClient.txt
 Source/testReceptionFichier.txt
 Source/TestFichierReception.cpp
@@ -17,13 +15,7 @@ Source/TestClientTCP
 TestClientTCP
 Source/TestFichierEnvoi.cpp
 testEnvoiFichier.txt
-/Source/Tests/
-Source/Tests/TestFichierEnvoi
-Source/Tests/TestFichierEnvoi.cpp
-Source/Tests/TestFichierReception
-Source/Tests/TestFichierReception.cpp
-Source/Tests/TestFichierEnvoi
-Source/Tests/TestFichierEnvoi.cpp
-Source/Tests/TestFichierReception
-Source/Tests/TestFichierReception.cpp
+Tests/
 .vscode/
+Client/Musique/
+Serveur/Musique/

@@ -8,7 +8,5 @@
 
  struct Header
  {
-     char nomFichier[50];
-     uint8_t tailleNomFichier;
-     long tailleFichier;
+     int nombreFichier;
  };
