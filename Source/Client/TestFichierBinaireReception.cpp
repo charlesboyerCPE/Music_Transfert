@@ -19,8 +19,6 @@
 #include "../HeaderFichier.h"
 #include "../Header.h"
 
-#define CHEMIN_RECEPTION "MusiqueRecu/"
-
 int main(void)
 {
     ClientTcp *monClient = NULL;

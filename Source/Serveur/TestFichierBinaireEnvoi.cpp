@@ -75,12 +75,12 @@ int main(void)
 			fichierEnvoi.open(nomsFichier[i], std::ios::binary);
 
 			//On récupère la taille du fichier
-			tailleFichier = std::filesystem::file_size(nomsFichier[i]);
+			//tailleFichier = std::filesystem::file_size(nomsFichier[i]);
 
 			//On initialise le header pour le futur fichier
 			strcpy(headerFichier.nomFichier, nomsFichier[i].c_str());
 			headerFichier.tailleNomFichier = strlen(headerFichier.nomFichier);
-			headerFichier.tailleFichier = tailleFichier;
+			headerFichier.tailleFichier = std::filesystem::file_size(nomsFichier[i]);
 
 			//Afficher le contenu du header
 			std::cout << "Nom: " << headerFichier.nomFichier << std::endl;

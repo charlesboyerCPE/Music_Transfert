@@ -8,5 +8,5 @@
 
  struct Header
  {
-     int nombreFichier;
+    int nombreFichier;
  };
