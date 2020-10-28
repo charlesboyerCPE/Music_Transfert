@@ -17,10 +17,9 @@
 #include <vector>
 
 #include "ServeurTCP.h"
-#include "../HeaderFichier.h"
-#include "../Header.h"
+#include "../json.hpp"
 
-#define CHEMIN_MUSIQUE "Musique"
+#define CHEMIN_MUSIQUE "/mnt/d/Windows/Bureau/Envoi Fichier"
 
 //Retourne un vecteur contenant tous les noms de fichier présent dans le dossier, à l'adresse chemin
 std::vector<std::string> obtenirFichierDansDossier(std::string chemin)
@@ -33,81 +32,104 @@ std::vector<std::string> obtenirFichierDansDossier(std::string chemin)
 		nomsFichier.push_back(entry.path());
 	}
 
-	std::cout << "\nNombre de fichier présent dans " << CHEMIN_MUSIQUE << ": " << nomsFichier.size() << std::endl << std::endl;
 	return nomsFichier;
 }
 
 int main(void)
 {
     ServeurTCP *monServeurTCP = NULL;
-	HeaderFichier headerFichier;
-	Header header;
 
 	std::ifstream fichierEnvoi;
+	std::vector<std::string> nomsFichier;
+
+	std::string trameTailleJSON;
+	std::string trameFichier;
+
+	std::string dumpJSON;
+	nlohmann::json listeFichier;
 
 	int tailleAlire = 5000;
 	int tailleLu = 0;
-	char bufferFichier[tailleAlire];
-	
-	std::uintmax_t tailleFichier;
+	int i = 0;
 
-	std::vector<std::string> nomsFichier;
+	char bufferFichier[tailleAlire];
 
     try
     {
         monServeurTCP = new ServeurTCP();
 		
 		//On analyse le dossier Musique pour obtenir le nom de tous les fichiers
+		std::cout << "ANALYSE DU DOSSIER..." << std::endl; 
 		nomsFichier = obtenirFichierDansDossier(CHEMIN_MUSIQUE);
 		
 		//On ouvre le serveur et on connecte un client
+		std::cout << "\nOuverture du serveur et attente du client..." << std::endl; 
 		monServeurTCP->ouvrir("127.0.0.1", 55555);
 		monServeurTCP->connecterUnClient();
 
-		//On envoi le nombre de fichier
-		header.nombreFichier = nomsFichier.size();
-		
-		monServeurTCP->emettreData(&header, sizeof(header));
+		//Création d'une liste contenant les info des fichiers
+		std::cout << "Creation de la liste de fichier..." << std::endl; 
+		for(i = 0; i < nomsFichier.size(); i++)
+		{
+			listeFichier[i] = 
+			{ 
+				{"nomFichier", std::filesystem::path(nomsFichier[i]).filename()}, 
+				{"tailleFichier", std::filesystem::file_size(nomsFichier[i])} 
+			};
+		}
 
-		for (int i = 0; i < nomsFichier.size(); i++)
+		//Préparation de l'envoi de la liste
+		dumpJSON = listeFichier.dump();
+
+		//Envoi de la trame contenant la taille du JSON
+		std::cout << "\nEnvoi de la liste au client..." << std::endl; 
+		trameTailleJSON = std::to_string(dumpJSON.size()) + "\n";
+		monServeurTCP->emettreData((void*) trameTailleJSON.c_str(), trameTailleJSON.size());
+
+		//Envoi du JSON contenant les informations des fichiers
+		while(tailleLu < dumpJSON.size())
+		{
+			if((tailleLu + tailleAlire) > dumpJSON.size())
+			{
+				tailleAlire = dumpJSON.size() - tailleLu;
+			}
+
+			//Envoi du JSON
+			monServeurTCP->emettreData((void*)(dumpJSON.c_str() + tailleLu), tailleAlire);
+			tailleLu += tailleAlire;
+		}
+		
+		//Envoi des fichiers
+		std::cout << "\nEnvoi des fichiers au client..." << std::endl; 
+		for (i = 0; i < listeFichier.size(); i++)
 		{
 			//On ouvre le fichier en lecture
 			fichierEnvoi.open(nomsFichier[i], std::ios::binary);
 
-			//On récupère la taille du fichier
-			//tailleFichier = std::filesystem::file_size(nomsFichier[i]);
-
-			//On initialise le header pour le futur fichier
-			strcpy(headerFichier.nomFichier, nomsFichier[i].c_str());
-			headerFichier.tailleNomFichier = strlen(headerFichier.nomFichier);
-			headerFichier.tailleFichier = std::filesystem::file_size(nomsFichier[i]);
-
 			//Afficher le contenu du header
-			std::cout << "Nom: " << headerFichier.nomFichier << std::endl;
-			std::cout << "Taille du nom: " << headerFichier.tailleNomFichier << std::endl;
-			std::cout << "Taille: " << headerFichier.tailleFichier << std::endl << std::endl;
+			std::cout << "Fichier en envoi:" << std::endl;
+			std::cout << "\tNom: " << listeFichier[i]["nomFichier"] << std::endl;
+			std::cout << "\tTaille: " << listeFichier[i]["tailleFichier"] << std::endl;
 
-			//On envoi d'abord le header au client
-			monServeurTCP->emettreData(&headerFichier, sizeof(headerFichier));
-
-			//On envoi ensuite le contenu du fichier petit à petit
-			while(tailleLu < tailleFichier)
+			//Envoi du fichier petit à petit
+			tailleLu = 0;
+			while(tailleLu < listeFichier[i]["tailleFichier"].get<int>())
 			{
-				if((tailleLu + tailleAlire) > tailleFichier)
+				if((tailleLu + tailleAlire) > listeFichier[i]["tailleFichier"].get<int>())
 				{
-					tailleAlire = tailleFichier - tailleLu;
+					tailleAlire = listeFichier[i]["tailleFichier"].get<int>() - tailleLu;
 				}
 				
 				//On copie une partie du fichier dans le buffer
 				fichierEnvoi.read(bufferFichier, tailleAlire);
 
 				//On envoi le buffer petit à petit
-				monServeurTCP->emettreData(bufferFichier, tailleAlire);
+				monServeurTCP->emettreData((void *)bufferFichier, tailleAlire);
 				tailleLu += tailleAlire;
 			}
 
 			//On ferme le fichier en cours
-			std::cout << "Envoi de " << headerFichier.nomFichier << std::endl;	
+			std::cout << "Envoi de " << listeFichier[i]["nomFichier"] << " effectue" << std::endl << std::endl;	
 			fichierEnvoi.close();
 		}
 
@@ -149,10 +171,8 @@ int main(void)
 			case ServeurTCP::ErreurServeurTCP::EchecAttenteClient :
 				std::cerr << "Attente client" << std::endl;
 				break;
-
 		}
 	}
-
 
     delete monServeurTCP;
 

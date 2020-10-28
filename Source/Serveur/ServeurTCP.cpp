@@ -113,6 +113,7 @@ ssize_t ServeurTCP::emettreData(void* data, uint32_t nbOctets)
 	int nbEmit;
 
 	nbEmit = send(socketDialogueClient, data, nbOctets, 0);
+	
 	if (nbEmit != nbOctets) throw ErreurServeurTCP::EchecEnvoi;
 	else
 	{

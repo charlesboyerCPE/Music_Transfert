@@ -17,63 +17,94 @@
 
 #include "ClientTcp.h"
 #include "../HeaderFichier.h"
-#include "../Header.h"
+#include "../json.hpp"
+
+#define CHEMIN_RECEPTION "Musique/"
 
 int main(void)
 {
     ClientTcp *monClient = NULL;
-	HeaderFichier headerFichier;
-	Header header;
 
 	std::ofstream fichierReception;
-	
+
+	nlohmann::json listeFichier;
+
 	int tailleLu = 0;
 	int tailleAlire = 5000;
-	int tailleFichier = 0;
 	int nombreFichier = 0;
+	int tailleJSON = 0;
+	int i = 0;
 
 	char bufferFichier[tailleAlire];
 	
+	char octetRecu;
+	char octetJSON;
 
+	std::string trameTailleJSON;
+	std::string trameJSON;
     try
     {
         monClient = new ClientTcp();
 
+		std::cout << "Connexion au serveur..." << std::endl; 
         monClient->connecter("127.0.0.1", 55555);
-		
-		//On recoit le nombre de fichier que le serveur va envoyer
-		monClient->recevoirData(&header, sizeof(header));
-		std::cout << "Nombre de fichier a recevoir: " << header.nombreFichier << std::endl;
 
-		for (int i = 0; i < header.nombreFichier; i++)
+		//Reception de la taille du JSON
+		std::cout << "\nReception de la liste des fichiers..." << std::endl; 
+		while(octetJSON != '\n')
 		{
+			monClient->recevoirData(&octetJSON, 1);	
+			if (octetJSON != '\n')
+			{
+				trameTailleJSON += octetJSON;
+			}
+		}
+		tailleJSON = std::stoi(trameTailleJSON);
 
-			//On recoit le header du fichier
-			monClient->recevoirData(&headerFichier, sizeof(headerFichier));
-			std::cout << "Fichier recu:" << std::endl;
-			std::cout << "\tNom: " << headerFichier.nomFichier << std::endl;
-			std::cout << "\tTaille du nom: " << headerFichier.tailleNomFichier << std::endl;
-			std::cout << "\tTaille: " << headerFichier.tailleFichier << std::endl;
+		//Reception de la trame contenant le JSON sous forme de chaine de char
+		while(tailleLu < tailleJSON)
+		{
+			if((tailleLu + tailleAlire) > tailleJSON)
+			{
+				tailleAlire = tailleJSON - tailleLu;
+			}
+			
+			monClient->recevoirData((void *)(bufferFichier + tailleLu), tailleAlire);
+			tailleLu += tailleAlire;
+			trameJSON += bufferFichier;
+		}
+
+		//Sérialization du JSON
+		listeFichier = nlohmann::json::parse(trameJSON);
+
+		//Reception des fichiers
+		std::cout << "\nReception des fichiers..." << std::endl; 
+		for (i = 0; i < listeFichier.size(); i++)
+		{
+			//Affichage du fichier a recevoir
+			std::cout << "Fichier en attente:" << std::endl;
+			std::cout << "\tNom: " << listeFichier[i]["nomFichier"] << std::endl;
+			std::cout << "\tTaille: " << listeFichier[i]["tailleFichier"] << std::endl;
 
 			//On créer le fichier avec les informations du header
-			fichierReception.open(headerFichier.nomFichier, std::ios::binary);
-			tailleFichier = headerFichier.tailleFichier;
+			fichierReception.open(listeFichier[i]["nomFichier"], std::ios::binary);
 			
 			//On recoit le fichier par paquet d'octets
-			while(tailleLu < tailleFichier)
+			tailleLu = 0;
+			while(tailleLu < listeFichier[i]["tailleFichier"].get<int>())
 			{
-				if((tailleLu + tailleAlire) > tailleFichier)
+				if((tailleLu + tailleAlire) > listeFichier[i]["tailleFichier"].get<int>())
 				{
-					tailleAlire = tailleFichier - tailleLu;
+					tailleAlire = listeFichier[i]["tailleFichier"].get<int>() - tailleLu;
 				}
 
-				monClient->recevoirData(bufferFichier, tailleAlire);
+				monClient->recevoirData((void *)bufferFichier, tailleAlire);
 				fichierReception.write(bufferFichier, tailleAlire);
-				tailleLu += tailleAlire;	
+				tailleLu += tailleAlire;
 			}
 
 			//On ferme le fichier en cours
-			std::cout << "\nSauvegarde de " << headerFichier.nomFichier << std::endl;
+			std::cout << "Sauvegarde de " << listeFichier[i]["nomFichier"] << " effectue" << std::endl << std::endl;
 			fichierReception.close();
 		}
 

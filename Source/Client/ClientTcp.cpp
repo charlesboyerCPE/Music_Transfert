@@ -113,6 +113,7 @@ ssize_t ClientTcp::recevoirData(void* data, uint32_t nbOctets)
 	if(socketDialogue == -1) throw ErreurClientTcp::NonOuvert;
 	
 	nbRecu = recv (socketDialogue, data, nbOctets , MSG_WAITALL); 
+
 	if(nbRecu != nbOctets) throw ErreurClientTcp::ErreurReception;
 	else
 	{
