@@ -5,7 +5,7 @@
  * \brief Programme permettant de tester la classe Fichier
         avec des fichiers binaires en reception
         Compilation:
-        g++ -o TestFichierBinaireReception TestFichierEnvoi.cpp ../Fichier.cpp ../ClientTcp.cpp
+        g++ -o TestFichierBinaireReception TestFichierBinaireEnvoi.cpp ../ClientTcp.cpp
  * \version 1.0
  */
 

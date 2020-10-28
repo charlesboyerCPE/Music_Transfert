@@ -5,7 +5,7 @@
  * \brief Programme permettant de tester la classe Fichier
  *       avec des fichiers binaires en envoi
  *       Compilation:
- *       g++ -o TestFichierBinaireEnvoi TestFichierEnvoi.cpp ../Fichier.cpp ../ServeurTCP.cpp
+ *       g++ -o -std=c++17 TestFichierBinaireEnvoi TestFichierBinaireEnvoi.cpp ../ServeurTCP.cpp
  * \version 1.0
  */
 
@@ -44,8 +44,8 @@ int main(void)
 
 	std::string trameTailleJSON;
 	std::string trameFichier;
-
 	std::string dumpJSON;
+
 	nlohmann::json listeFichier;
 
 	int tailleAlire = 5000;
