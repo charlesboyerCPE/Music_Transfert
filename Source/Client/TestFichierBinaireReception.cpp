@@ -16,38 +16,44 @@
 #include <filesystem>
 
 #include "ClientTcp.h"
-#include "../HeaderFichier.h"
 #include "../json.hpp"
 
 #define CHEMIN_RECEPTION "Musique/"
+#define DEBUG_IP "127.0.0.1"
+#define DEBUG_PORT 55555
 
 int main(void)
 {
     ClientTcp *monClient = NULL;
 
 	std::ofstream fichierReception;
+	std::string trameTailleJSON;
+	std::string trameJSON;
+	std::string ipServeur;
+	std::string cheminMusique;
 
 	nlohmann::json listeFichier;
 
+	int port = 0;
 	int tailleLu = 0;
 	int tailleAlire = 5000;
-	int nombreFichier = 0;
 	int tailleJSON = 0;
 	int i = 0;
 
 	char bufferFichier[tailleAlire];
-	
-	char octetRecu;
 	char octetJSON;
 
-	std::string trameTailleJSON;
-	std::string trameJSON;
     try
     {
         monClient = new ClientTcp();
 
-		std::cout << "Connexion au serveur..." << std::endl; 
-        monClient->connecter("127.0.0.1", 55555);
+		std::cout << "IP du serveur: ";
+		std::cin >> ipServeur;
+		std::cout << "Port du serveur: ";
+		std::cin >> port;
+
+		std::cout << "Connexion au serveur..." << std::endl;
+        monClient->connecter(DEBUG_IP, DEBUG_PORT);
 
 		//Reception de la taille du JSON
 		std::cout << "\nReception de la liste des fichiers..." << std::endl; 
@@ -101,6 +107,7 @@ int main(void)
 				monClient->recevoirData((void *)bufferFichier, tailleAlire);
 				fichierReception.write(bufferFichier, tailleAlire);
 				tailleLu += tailleAlire;
+				//std::cout << "Progression: " << (tailleLu/tailleAlire)*100 << "%";
 			}
 
 			//On ferme le fichier en cours

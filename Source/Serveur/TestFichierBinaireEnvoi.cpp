@@ -20,6 +20,7 @@
 #include "../json.hpp"
 
 #define CHEMIN_MUSIQUE "/mnt/d/Windows/Bureau/Envoi Fichier"
+#define PORT 55555
 
 //Retourne un vecteur contenant tous les noms de fichier présent dans le dossier, à l'adresse chemin
 std::vector<std::string> obtenirFichierDansDossier(std::string chemin)
@@ -41,9 +42,7 @@ int main(void)
 
 	std::ifstream fichierEnvoi;
 	std::vector<std::string> nomsFichier;
-
 	std::string trameTailleJSON;
-	std::string trameFichier;
 	std::string dumpJSON;
 
 	nlohmann::json listeFichier;
@@ -64,7 +63,7 @@ int main(void)
 		
 		//On ouvre le serveur et on connecte un client
 		std::cout << "\nOuverture du serveur et attente du client..." << std::endl; 
-		monServeurTCP->ouvrir("127.0.0.1", 55555);
+		monServeurTCP->ouvrir("127.0.0.1", PORT);
 		monServeurTCP->connecterUnClient();
 
 		//Création d'une liste contenant les info des fichiers
@@ -103,6 +102,7 @@ int main(void)
 		std::cout << "\nEnvoi des fichiers au client..." << std::endl; 
 		for (i = 0; i < listeFichier.size(); i++)
 		{
+
 			//On ouvre le fichier en lecture
 			fichierEnvoi.open(nomsFichier[i], std::ios::binary);
 
@@ -126,6 +126,7 @@ int main(void)
 				//On envoi le buffer petit à petit
 				monServeurTCP->emettreData((void *)bufferFichier, tailleAlire);
 				tailleLu += tailleAlire;
+
 			}
 
 			//On ferme le fichier en cours
